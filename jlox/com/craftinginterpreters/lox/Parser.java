@@ -66,8 +66,26 @@ public class Parser {
 		return new Stmt.Expression(expr);
 	}
 
+	private Expr assignment() {
+		Expr expr = comma();
+
+		if (match(EQUAL)) {
+			Token equals = previous();
+			Expr value = assignment();
+
+			if (expr instanceof Expr.Variable) {
+				Token name = ((Expr.Variable) expr).name;
+				return new Expr.Assign(name, value);
+			}
+
+			error(equals, "Invalid assignment target.");
+		}
+
+		return expr;
+	}
+
 	private Expr expression() {
-		return comma();
+		return assignment();
 	}
 
 	// Challenge 6.1
